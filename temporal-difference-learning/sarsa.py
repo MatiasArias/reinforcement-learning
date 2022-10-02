@@ -1,5 +1,3 @@
-from itertools import count
-from msilib.schema import Environment
 import numpy as np
 import random
 # Parametros
