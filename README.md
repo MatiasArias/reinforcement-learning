@@ -15,7 +15,7 @@ Aplicacion del algoritmo **Sarsa**, uno de los algoritmos de Aprendizaje Tempora
   pip install numpy
   ```
 ### Ejecuccion del codigo:
-Despues de 1000 iteraciones:
+Despues de 10000 iteraciones:
 ```
 El agente encontró 93 veces la salida
 

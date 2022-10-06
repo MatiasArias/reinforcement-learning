@@ -1,25 +1,8 @@
 import numpy as np
 import random
-# Parametros
-egreedy = 0.8 #epsilon
-discount_rate = 0.5 #phi
-step_size = 0.2 #alpha
-total_states = 16 #matriz 4x4
-total_actions = 4 #up,down,right,left
-
-## Inicializar matrices
-# Matrices de los valores Q(s,a)
-action_values = np.zeros((total_states,total_actions))
-#El "ambiente" por donde se va a mover el agente con recompensa en la posicion 3,3
-environment_reward = np.zeros((4,4))
-environment_reward[3][3] = 1
-#Matriz para indicar los indices de los estados en donde se encuentra agente
-environment_index = mat = np.arange(16).reshape((4, 4))
-print(environment_index)
-print(environment_reward)
 
 #Funcion de politica aplicada a Q(s,a) e-greedy
-def e_greedy(state):
+def e_greedy(state,action_values):
     p = np.random.random()
     if p < egreedy:
         #Exploro
@@ -54,40 +37,61 @@ def take_action(state,action):
         return 16
 #loop
 #Inicializa la accion y el estado
-state = 0
-action = 0
-iterations=0
-count_reward = 0
-while (iterations<1000):
-    iterations=iterations+1
-    #Inicializar S
-    state=0
-    #Seleccionar accion a desde el estado s usando una politica derivada de Q
-    action = e_greedy(state)
-    print("Buscando...")
-    #Comienza el episodio
-    while(state!=total_states-1):
-        # Proximo estado
-        next_state = take_action(state,action)
-        #Evalua si se va de los limites
-        if (next_state==16):
-            break
-        # Recompensa del proximo estado
-        find_state = np.where(environment_index==state+1)
-        reward = environment_reward[find_state[0][0]][find_state[1][0]]
-        #Seleccionar accion a' desde el estado s' usando una politica derivada de Q
-        next_action = e_greedy(next_state)
-        #Formula principal de Sarsa
-        action_values[state][action] = action_values[state][action] + step_size*(reward + discount_rate*action_values[next_state][next_action]-action_values[state][action])
-        #Asigna nuevos estados y nuevas acciones
-        state=next_state
-        action=next_action
-        #Cuenta cuantas veces llegó a la salida
-        if (state==15):
-            count_reward=count_reward+1
+
+def algorithm_sarsa(totaliterations):
+    state = 0
+    action = 0
+    iterations=0
+    count_reward = 0
+    ## Inicializar matrices
+    # Matrices de los valores Q(s,a)
+    action_values = np.zeros((total_states,total_actions))
+    
+    while (iterations<totaliterations):
+        iterations=iterations+1
+        #Inicializar S
+        state=0
+        #Seleccionar accion a desde el estado s usando una politica derivada de Q
+        action = e_greedy(state,action_values)
+        #Comienza el episodio
+        while(state!=total_states-1):
+            # Proximo estado
+            next_state = take_action(state,action)
+            #Evalua si se va de los limites
+            if (next_state==16):
+                break
+            # Recompensa del proximo estado
+            find_state = np.where(environment_index==state+1)
+            reward = environment_reward[find_state[0][0]][find_state[1][0]]
+            #Seleccionar accion a' desde el estado s' usando una politica derivada de Q
+            next_action = e_greedy(next_state,action_values)
+            #Formula principal de Sarsa
+            action_values[state][action] = action_values[state][action] + step_size*(reward + discount_rate*action_values[next_state][next_action]-action_values[state][action])
+            #Asigna nuevos estados y nuevas acciones
+            state=next_state
+            action=next_action
+            #Cuenta cuantas veces llegó a la salida
+            if (state==15):
+                count_reward=count_reward+1
+    print("Terminó la busqueda")
+    print("Despues de "+str(iterations)+" iteraciones, El agente encontró "+str(count_reward)+" veces la salida")
+    print('\n RESULTADOS:')
+    print(action_values)
+
+# Parametros
+egreedy = 0.8 #epsilon
+discount_rate = 0.5 #phi
+step_size = 0.2 #alpha
+total_states = 16 #matriz 4x4
+total_actions = 4 #up,down,right,left
+
+#El "ambiente" por donde se va a mover el agente con recompensa en la posicion 3,3
+environment_reward = np.zeros((4,4))
+environment_reward[3][3] = 1
+#Matriz para indicar los indices de los estados en donde se encuentra agente
+environment_index = mat = np.arange(16).reshape((4, 4))
 
 
-print("Terminó la busqueda")
-print("El agente encontró "+str(count_reward)+" veces la salida")
-print('\n RESULTADOS:')
-print(action_values)
+algorithm_sarsa(100)
+algorithm_sarsa(1000)
+algorithm_sarsa(10000)
