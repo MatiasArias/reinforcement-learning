@@ -92,6 +92,4 @@ environment_reward[3][3] = 1
 environment_index = mat = np.arange(16).reshape((4, 4))
 
 
-algorithm_sarsa(100)
-algorithm_sarsa(1000)
-algorithm_sarsa(10000)
+
