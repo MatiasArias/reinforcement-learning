@@ -14,6 +14,10 @@ Aplicacion del algoritmo **Sarsa**, uno de los algoritmos de Aprendizaje Tempora
   ```
   pip install numpy
   ```
+  * matplotlib:
+  ```
+  pip install matplotlib
+  ```
 ### Ejecuccion del codigo:
 Despues de 10000 iteraciones:
 ```
