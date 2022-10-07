@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import time
 import tkinter as tk
@@ -6,11 +7,9 @@ GRID = 40   # pixels
 GRID_Y = 8  # grid height
 GRID_X = 8  # grid width
 
-class Pantalla(tk.Tk,object):
+class Environment(tk.Tk,object):
     def __init__(self):
-        super(Pantalla, self).__init__()
-        self.action_space = ['UP', 'RIGHT', 'DOWN', 'LEFT']
-        self.n_actions = len(self.action_space)
+        super(Environment, self).__init__()
         self.title('S.A.R.S.A')
         self.geometry('{0}x{1}'.format(GRID_X * GRID, GRID_Y * GRID))
         self.build_app()
@@ -30,22 +29,23 @@ class Pantalla(tk.Tk,object):
         # create origin
         origin = np.array([20, 20])
 
-        # create oval
+        # Creacion de la recomepensa
         oval_center = origin + GRID * 7
         self.reward = self.canvas.create_oval(
             oval_center[0] - 15, oval_center[1] - 15,
             oval_center[0] + 15, oval_center[1] + 15,
             fill='yellow')
 
-        # create red rect
+        # creacion del agente
         self.agente = self.canvas.create_rectangle(
             origin[0] - 15, origin[1] - 15,
             origin[0] + 15, origin[1] + 15,
             fill='red')
 
-        # pack all
+        # Empaquetar todo
         self.canvas.pack()
 
+    #Es el anterior take_action, es el paso del agente
     def step(self,action):
         state = self.canvas.coords(self.agente)
         base_action=np.array([0,0])
@@ -66,9 +66,9 @@ class Pantalla(tk.Tk,object):
             if state[0] > GRID:
                 base_action[0] -= GRID
         self.canvas.move(self.agente, base_action[0], base_action[1])
-
+        
         next_state = self.canvas.coords(self.agente)  # next state
-
+        next_state_index = self.coordsToIndex(next_state)
         # reward function
         if next_state == self.canvas.coords(self.reward):
             reward = 1
@@ -77,13 +77,21 @@ class Pantalla(tk.Tk,object):
         else:
             reward = 0
             done = False
+        
+        return next_state_index, reward, done
 
-        return next_state, reward, done
+    #Pasa las coordenadas a un indice que logra interprestar SARSA.class
+    def coordsToIndex(self,state):
+        environment_index = mat = np.arange(GRID_X*GRID_Y).reshape((GRID_X, GRID_Y))
+        state_index = environment_index[math.floor(state[1]/40)][math.floor(state[0]/40)]
+        return state_index
 
+    #Velocidad con cual se mueve el agente
     def render(self):
-        time.sleep(0.1)
+        time.sleep(0.00001)
         self.update()
 
+    #Reseta el agente a la posicion inicial
     def reset(self):
         self.update()
         time.sleep(0.5)
@@ -94,7 +102,7 @@ class Pantalla(tk.Tk,object):
             origin[0] + 15, origin[1] + 15,
             fill='red')
         # return observation
-        return self.canvas.coords(self.rect)
+        return self.canvas.coords(self.agente)
 if __name__ == "__main__":
     env = Pantalla()
     action=2

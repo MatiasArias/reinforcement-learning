@@ -1,95 +1,69 @@
 import numpy as np
-import random
+import math
+from app import Environment
+from asyncio.windows_events import NULL
 
-#Funcion de politica aplicada a Q(s,a) e-greedy
-def e_greedy(state,action_values):
-    p = np.random.random()
-    if p < egreedy:
-        #Exploro
-        j = np.random.choice(3)
-    else:
-        #Exploto
-        j = np.argmax(action_values[state])
-    return j
 
-#Funcion que toma la accion de moverse de un estado a otro
-def take_action(state,action):
-    find_state = np.where(environment_index==state)
-    fila=find_state[0][0]
-    columna=find_state[1][0]
-    if (action == 0):
-        #Arriba
-        fila=fila-1
-    if (action == 1):
-        #Derecha
-        columna=columna+1
-    if (action == 2):
-        #Abajo
-        fila=fila+ 1
-    if (action == 3):
-        #Izquierda
-        columna=columna-1
+class SARSA(object):
+    def __init__(self,epsilon=0.8,phi=0.2,alpha=0.5,total_states=64,total_actions=4,view=NULL):
+        # Parametros
+        self.egreedy = epsilon #epsilon
+        self.discount_rate = phi #phi
+        self.step_size = alpha #alpha
+        self.total_states = total_states #matriz 4x4
+        self.total_actions = total_actions #up,down,right,left
+        self.view = view #Pantalla
+         
+    #Funcion de politica aplicada a Q(s,a) e-greedy
+    def e_greedy(self,state,action_values):
+        p = np.random.random()
+        if p < self.egreedy:
+            #Exploro
+            next_action = np.random.choice(3)
+        else:
+            #Exploto
+            next_action = np.argmax(action_values[state])
+        return next_action
 
-    #Si el agente se va de los limites retornará 16 que generará que salga del ciclo
-    if(fila<4 and columna<4 and fila>=0 and columna>=0):
-        return environment_index[fila][columna]
-    else:
-        return 16
-#loop
-#Inicializa la accion y el estado
-
-def algorithm_sarsa(totaliterations):
-    state = 0
-    action = 0
-    iterations=0
-    count_reward = 0
-    ## Inicializar matrices
-    # Matrices de los valores Q(s,a)
-    action_values = np.zeros((total_states,total_actions))
-    
-    while (iterations<totaliterations):
-        iterations=iterations+1
-        #Inicializar S
-        state=0
-        #Seleccionar accion a desde el estado s usando una politica derivada de Q
-        action = e_greedy(state,action_values)
-        #Comienza el episodio
-        while(state!=total_states-1):
-            # Proximo estado
-            next_state = take_action(state,action)
-            #Evalua si se va de los limites
-            if (next_state==16):
-                break
-            # Recompensa del proximo estado
-            find_state = np.where(environment_index==state+1)
-            reward = environment_reward[find_state[0][0]][find_state[1][0]]
-            #Seleccionar accion a' desde el estado s' usando una politica derivada de Q
-            next_action = e_greedy(next_state,action_values)
-            #Formula principal de Sarsa
-            action_values[state][action] = action_values[state][action] + step_size*(reward + discount_rate*action_values[next_state][next_action]-action_values[state][action])
-            #Asigna nuevos estados y nuevas acciones
-            state=next_state
-            action=next_action
-            #Cuenta cuantas veces llegó a la salida
-            if (state==15):
-                count_reward=count_reward+1
-    print("Terminó la busqueda")
-    print("Despues de "+str(iterations)+" iteraciones, El agente encontró "+str(count_reward)+" veces la salida")
-    print('\n RESULTADOS:')
-    print(action_values)
-
-# Parametros
-egreedy = 0.8 #epsilon
-discount_rate = 0.5 #phi
-step_size = 0.2 #alpha
-total_states = 16 #matriz 4x4
-total_actions = 4 #up,down,right,left
-
-#El "ambiente" por donde se va a mover el agente con recompensa en la posicion 3,3
-environment_reward = np.zeros((4,4))
-environment_reward[3][3] = 1
-#Matriz para indicar los indices de los estados en donde se encuentra agente
-environment_index = mat = np.arange(16).reshape((4, 4))
+    def algorithm_sarsa(self,totaliterations):
+        #Inicializa la accion y el estado
+        state = 0
+        action = 0
+        iterations=0
+        count_reward = 0
+        actions_to_finish = np.zeros(totaliterations)
+        # Matriz de los valores Q(s,a)
+        action_values = np.zeros((self.total_states,self.total_actions))
+        
+        while (iterations<totaliterations):
+            #Resetea la pantalla
+            self.view.reset()
+            iterations=iterations+1
+            #Inicializar S
+            state=0
+            #Seleccionar accion a desde el estado s usando una politica derivada de Q
+            action = self.e_greedy(state,action_values)
+            #Comienza el episodio
+            while(state!=self.total_states-1):
+                #Actualizar pantalla
+                self.view.render()
+                # Proximo estado, recompensa de ese estado y boolean si logra la recompensa o no
+                next_state, reward, done = self.view.step(action)
+                
+                #Seleccionar accion a' desde el estado s' usando una politica derivada de Q
+                next_action = self.e_greedy(next_state,action_values)
+                #Formula principal de Sarsa
+                action_values[state][action] = action_values[state][action] + self.step_size*(reward + self.discount_rate*action_values[next_state][next_action]-action_values[state][action])
+                #Asigna nuevos estados y nuevas acciones
+                state=next_state
+                action=next_action
+                #Contador para saber en cuantas acciones logró 
+                actions_to_finish[iterations-1] += 1
+                #Cuenta cuantas veces llegó a la salida
+                if (done):
+                    count_reward=count_reward+1
+                    break
+        return count_reward, actions_to_finish
 
 
 
