@@ -20,18 +20,18 @@ Aplicacion del algoritmo **Sarsa**, uno de los algoritmos de Aprendizaje Tempora
 
 ## Implementacion de GridWorld & Puddle World
 
-![image](reinforcement-learning/temporal-difference-learning/01-sarsa/tests/app_view.png)
+![image](/temporal-difference-learning/01-sarsa/tests/app_view.png)
 
 ## Ejecuccion del codigo:
 
 ### Despues de 1000 iteraciones de Sarsa.py:
 
-![image](reinforcement-learning/temporal-difference-learning/01-sarsa/tests/app_view.png)
+![image](/temporal-difference-learning/01-sarsa/tests/app_view.png)
 
 ### Despues de 1000 iteraciones de Sarsa en GridWorld:
 
-![image](reinforcement-learning/temporal-difference-learning/01-sarsa/tests/sarsa-gridworld_1000i.png)
+![image](/temporal-difference-learning/01-sarsa/tests/sarsa-gridworld_1000i.png)
 
 ### Despues de 1000 iteraciones de Sarsa en PuddleWorld:
 
-![image](reinforcement-learning/temporal-difference-learning/01-sarsa/tests/sarsa-puddleworld_1000i.png)
+![image](/temporal-difference-learning/01-sarsa/tests/sarsa-puddleworld_1000i.png)
