@@ -26,7 +26,7 @@ Aplicacion del algoritmo **Sarsa**, uno de los algoritmos de Aprendizaje Tempora
 
 ### Despues de 1000 iteraciones de Sarsa.py:
 
-![image](/temporal-difference-learning/01-sarsa/tests/app_view.png)
+![image](/temporal-difference-learning/01-sarsa/tests/sarsa_1000i.png)
 
 ### Despues de 1000 iteraciones de Sarsa en GridWorld:
 
