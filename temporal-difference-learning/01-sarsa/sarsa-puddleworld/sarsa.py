@@ -50,18 +50,17 @@ class SARSA(object):
                 self.view.render()
                 # Proximo estado, recompensa de ese estado y boolean si logra la recompensa o no
                 next_state, reward, done = self.view.step(action)
-                
                 #Seleccionar accion a' desde el estado s' usando una politica derivada de Q
                 next_action = self.e_greedy(next_state,action_values)
                 #Formula principal de Sarsa
                 action_values[state][action] = action_values[state][action] + self.step_size*(reward + self.discount_rate*action_values[next_state][next_action]-action_values[state][action])
-                #Contador para saber en cuantas acciones logró 
+                #Contador para saber en cuantos pasos realizó y recolectar la recompensa de este episodio
                 steps_per_episode[iterations-1] += 1
                 reward_per_episode[iterations-1]+= action_values[state][action]
                 #Asigna nuevos estados y nuevas acciones
                 state=next_state
                 action=next_action
-                #Cuenta cuantas veces llegó a la salida
+                #Termina el episodio
                 if (done):
                     break
         return steps_per_episode, reward_per_episode
