@@ -76,8 +76,8 @@ def algorithm_qlearning(totaliterations):
             find_state = np.where(environment_index==state+1)
             reward = environment_reward[find_state[0][0]][find_state[1][0]]
             #Formula principal de Sarsa
-            action_maxreward = np.argmax(action_values[next_state])
-            action_values[state][action] = action_values[state][action] + step_size*(reward + discount_rate*action_values[next_state][action_maxreward]-action_values[state][action])
+            best_action = np.argmax(action_values[next_state])
+            action_values[state][action] = action_values[state][action] + step_size*(reward + discount_rate*action_values[next_state][best_action]-action_values[state][action])
             steps_per_episode[iterations-1]+=1
             reward_per_episode[iterations-1]+=action_values[state][action]
             #Asigna nuevos estados y nuevas acciones
