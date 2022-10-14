@@ -7,7 +7,7 @@
   ```
   pip install numpy
   ```
-  * matplotlib:
+* matplotlib:
   ```
   pip install matplotlib
   ```
