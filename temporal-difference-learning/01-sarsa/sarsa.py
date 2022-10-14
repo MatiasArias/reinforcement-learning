@@ -1,12 +1,24 @@
+from turtle import color
 import numpy as np
 import random
+import matplotlib.pyplot as plt
+
+
+def results(step_per_episode,reward_per_episode):
+    ax = plt.subplot2grid((2, 3), (0, 0),colspan=3)
+    ay = plt.subplot2grid((2, 3), (1, 0),colspan=3)
+    x=np.arange(steps_per_episode.size)
+    ax.plot(x, steps_per_episode,label="Pasos por episodio")
+    ay.plot(x, reward_per_episode,label="Recompensa por episodio",color='orange')
+    ax.legend(loc='upper left')
+    ay.legend(loc='upper left')
 
 #Funcion de politica aplicada a Q(s,a) e-greedy
 def e_greedy(state,action_values):
     p = np.random.random()
     if p < egreedy:
         #Exploro
-        j = np.random.choice(3)
+        j = np.random.choice(4)
     else:
         #Exploto
         j = np.argmax(action_values[state])
@@ -19,22 +31,24 @@ def take_action(state,action):
     columna=find_state[1][0]
     if (action == 0):
         #Arriba
-        fila=fila-1
+        if(fila>0):
+            fila=fila-1
     if (action == 1):
         #Derecha
-        columna=columna+1
+        if(columna<3):
+            columna=columna+1   
     if (action == 2):
         #Abajo
-        fila=fila+ 1
+        if(fila<3):
+            fila=fila+ 1
     if (action == 3):
         #Izquierda
-        columna=columna-1
+        if(columna>0):
+            columna=columna-1
 
     #Si el agente se va de los limites retornará 16 que generará que salga del ciclo
     if(fila<4 and columna<4 and fila>=0 and columna>=0):
         return environment_index[fila][columna]
-    else:
-        return 16
 #loop
 #Inicializa la accion y el estado
 
@@ -42,11 +56,11 @@ def algorithm_sarsa(totaliterations):
     state = 0
     action = 0
     iterations=0
-    count_reward = 0
     ## Inicializar matrices
     # Matrices de los valores Q(s,a)
     action_values = np.zeros((total_states,total_actions))
-    
+    steps_per_episode = np.zeros(totaliterations)
+    reward_per_episode = np.zeros(totaliterations)
     while (iterations<totaliterations):
         iterations=iterations+1
         #Inicializar S
@@ -57,9 +71,6 @@ def algorithm_sarsa(totaliterations):
         while(state!=total_states-1):
             # Proximo estado
             next_state = take_action(state,action)
-            #Evalua si se va de los limites
-            if (next_state==16):
-                break
             # Recompensa del proximo estado
             find_state = np.where(environment_index==state+1)
             reward = environment_reward[find_state[0][0]][find_state[1][0]]
@@ -67,16 +78,12 @@ def algorithm_sarsa(totaliterations):
             next_action = e_greedy(next_state,action_values)
             #Formula principal de Sarsa
             action_values[state][action] = action_values[state][action] + step_size*(reward + discount_rate*action_values[next_state][next_action]-action_values[state][action])
+            steps_per_episode[iterations-1]+=1
+            reward_per_episode[iterations-1]+=action_values[state][action]
             #Asigna nuevos estados y nuevas acciones
             state=next_state
             action=next_action
-            #Cuenta cuantas veces llegó a la salida
-            if (state==15):
-                count_reward=count_reward+1
-    print("Terminó la busqueda")
-    print("Despues de "+str(iterations)+" iteraciones, El agente encontró "+str(count_reward)+" veces la salida")
-    print('\n RESULTADOS:')
-    print(action_values)
+    return steps_per_episode,reward_per_episode
 
 # Parametros
 egreedy = 0.8 #epsilon
@@ -92,6 +99,7 @@ environment_reward[3][3] = 1
 environment_index = mat = np.arange(16).reshape((4, 4))
 
 
-algorithm_sarsa(100)
-algorithm_sarsa(1000)
-algorithm_sarsa(10000)
+steps_per_episode,reward_per_episode = algorithm_sarsa(1000)
+
+results(steps_per_episode,reward_per_episode)
+plt.show()
