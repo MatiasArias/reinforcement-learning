@@ -1,3 +1,4 @@
+import winsound
 import numpy as np
 import math
 from app import Environment
@@ -30,7 +31,6 @@ class SARSA(object):
         state = 0
         action = 0
         iterations=0
-        count_reward = 0
         steps_per_episode = np.zeros(totaliterations)
         reward_per_episode = np.zeros(totaliterations)
         # Matriz de los valores Q(s,a)
@@ -39,6 +39,7 @@ class SARSA(object):
         while (iterations<totaliterations):
             #Resetea la pantalla
             self.view.reset()
+            optimal=0
             iterations=iterations+1
             #Inicializar S
             state=0
@@ -56,13 +57,17 @@ class SARSA(object):
                 action_values[state][action] = action_values[state][action] + self.step_size*(reward + self.discount_rate*action_values[next_state][next_action]-action_values[state][action])
                 #Contador para saber en cuantos pasos realizó y recolectar la recompensa de este episodio
                 steps_per_episode[iterations-1] += 1
-                reward_per_episode[iterations-1]+= reward
+                reward_per_episode[iterations-1]+= action_values[state][action]
                 #Asigna nuevos estados y nuevas acciones
                 state=next_state
                 action=next_action
                 #Termina el episodio
                 if (done):
+                    if(steps_per_episode[iterations-1]<15):
+                        winsound.Beep(500, 100)  
+                        optimal+=1  
                     break
+        print(optimal)
         return steps_per_episode, reward_per_episode
 
 

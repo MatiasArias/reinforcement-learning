@@ -16,7 +16,7 @@ def results(steps_per_episode,reward_per_episode):
 
 if __name__ == "__main__":
     screen = Environment()
-    brain = SARSA(view=screen) 
+    brain = SARSA(epsilon=0.5,view=screen) 
     steps_per_episode, reward_per_episode = brain.algorithm_sarsa(1000)
     screen.mainloop()
     results(steps_per_episode, reward_per_episode)
